@@ -17,12 +17,14 @@ func main() {
 		fmt.Println("4.购票人选择")
 		fmt.Println("5.直接抢票")
 		fmt.Println("6.定时抢票")
-		fmt.Println("7.退出")
+		fmt.Println("7.时间间隔设置")
+		fmt.Println("8.退出")
 		fmt.Println("-------------------------")
 		fmt.Println("请选择:")
 		fmt.Scanln(&a)
 		switch a {
 		case 1:
+			c.InfoClear()
 		case 2:
 			c.Login()
 		case 3:
@@ -32,13 +34,17 @@ func main() {
 			c.GetPersonInfo()
 			c.ChosePerson()
 		case 5:
-			c.CreateOrder()
+			c.GrapTicket()
 		case 6:
+			c.CronTicket()
 		case 7:
-			break
+			c.SetTimeSleep()
+		case 8:
+			goto breakFlag
 		default:
 			fmt.Println("输入非法！")
 		}
 	}
-
+breakFlag:
+	fmt.Println("程序结束!")
 }

@@ -10,17 +10,16 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"time"
+
+	"github.com/go-co-op/gocron"
 )
 
 func NewCppCrawler() *CppCrawler {
 	cppObj := &CppCrawler{
-		Timesleep: "0.5",
+		Timesleep: 500,
 	}
 	*cppObj = readjson()
-	if cppObj.Timesleep == "0.5" {
-		fmt.Println("请输入抢票间隔:")
-		fmt.Scanln(&cppObj.Timesleep)
-	}
 	if cppObj.Account == "" {
 		fmt.Println("请输入账户:")
 		fmt.Scanln(&cppObj.Account)
@@ -32,10 +31,6 @@ func NewCppCrawler() *CppCrawler {
 	if cppObj.Version == "" {
 		fmt.Println("请输入当前版本:")
 		fmt.Scanln(&cppObj.Version)
-	}
-	if cppObj.EventMainId == "" {
-		fmt.Println("请输入活动Id:")
-		fmt.Scanln(&cppObj.EventMainId)
 	}
 	cppObj.client = &http.Client{}
 	writeJson(*cppObj)
@@ -88,6 +83,8 @@ func (c *CppCrawler) Login() {
 * 获取票信息
  */
 func (c *CppCrawler) GetTicketInfo() {
+	fmt.Println("请输入活动Id:")
+	fmt.Scanln(&c.EventMainId)
 	header := map[string]string{
 		"User-Agent":    "okhttp/3.14.7",
 		"Origin":        "https://cp.allcpp.cn",
@@ -119,6 +116,7 @@ func (c *CppCrawler) GetTicketInfo() {
 		panic("parse type error!")
 	}
 	c.TicketList = typeResponse.TicketTypeList
+	fmt.Println("展会名称为", typeResponse.TicketMain.Name)
 	writeJson(*c)
 }
 
@@ -229,7 +227,7 @@ func (c *CppCrawler) CreateOrder() {
 		fmt.Println("error json:", err)
 		panic("订单解析错误！")
 	}
-	c.orderResult = orderResult
+	c.OrderResult = orderResult
 	if orderResult.IsSuccess {
 		fmt.Println("抢到票了！")
 	}
@@ -344,4 +342,38 @@ func (c *CppCrawler) PostReq(post_url string, data map[string]string, header map
 		panic("读取响应错误")
 	}
 	return body
+}
+func (c *CppCrawler) InfoClear() {
+	if fileExists("crawler-cpp.json") {
+		err := os.Remove("crawler-cpp.json")
+		if err != nil {
+			fmt.Println("信息重置失败,error为:", err)
+		}
+	}
+}
+func (c *CppCrawler) SetTimeSleep() {
+	fmt.Println("时间间隔设置(毫秒):")
+	fmt.Scanln(&c.Timesleep)
+	writeJson(*c)
+}
+func (c *CppCrawler) GrapTicket() {
+	for {
+		c.CreateOrder()
+		if c.OrderResult.IsSuccess {
+			break
+		}
+		time.Sleep(time.Duration(c.Timesleep) * time.Millisecond)
+	}
+}
+func (c *CppCrawler) CronTicket() {
+	var temp string
+	fmt.Println("请输入当天抢票时间:")
+	fmt.Scanln(&temp)
+	scheduler := gocron.NewScheduler(time.Local)
+	scheduler.Every(1).Day().At(temp).Do(func() {
+		c.GrapTicket()
+	})
+
+	// 启动调度器（阻塞式运行）
+	scheduler.StartBlocking()
 }

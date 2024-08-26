@@ -9,16 +9,34 @@ type CppCrawler struct {
 	ComicList   map[string]string `json:"comicList"`
 	Version     string            `json:"version"`
 	EventMainId string            `json:"eventMainId"`
-	Timesleep   string            `json:"timesleep"`
+	Timesleep   int               `json:"timesleep"`
 	Account     string            `json:"account"`
 	Password    string            `json:"password"`
 	Token       string            `json:"token"`
 	BuyTicket   TicketInfo        `json:"buyticket"`
 	BuyPerson   Person            `json:"buyperson"`
 	client      *http.Client
-	orderResult OrderResult
+	OrderResult OrderResult
+}
+type TicketMain struct {
+	ID               int    `json:"id"`
+	Name             string `json:"name"`
+	EventName        string `json:"eventName"`
+	Description      string `json:"description"`
+	EventDescription string `json:"eventDescription"`
+	CoverPicID       int    `json:"coverPicId"`
+	CoverPicURL      string `json:"coverPicUrl"`
+	PicID            int    `json:"picId"`
+	Priority         int    `json:"priority"`
+	Enabled          int    `json:"enabled"`
+	EventMainID      int    `json:"eventMainId"`
+	Type             int    `json:"type"`
+	CreateTime       int64  `json:"createTime"`
+	UpdateTime       int64  `json:"updateTime"`
+	ConfirmableVO    any    `json:"confirmableVO"`
 }
 type TicketResponse struct {
+	TicketMain     TicketMain   `json:"ticketMain"`
 	TicketTypeList []TicketInfo `json:"ticketTypeList"`
 }
 type TicketInfo struct {
