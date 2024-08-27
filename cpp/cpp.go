@@ -18,6 +18,7 @@ import (
 func NewCppCrawler() *CppCrawler {
 	cppObj := &CppCrawler{
 		Timesleep: 500,
+		Version:   "3.14.4",
 	}
 	*cppObj = readjson()
 	if cppObj.Account == "" {
@@ -216,9 +217,6 @@ func (c *CppCrawler) CreateOrder() {
 		"devicespec":    "SM-G9810",
 		"token":         c.Token,
 	}
-	fmt.Println(c.BuyPerson.ID)
-	fmt.Println(params)
-	fmt.Println(header)
 	ORDER_URL := "https://www.allcpp.cn/api/ticket/buyticketalipay.do"
 	body := c.PostReq(ORDER_URL, params, header)
 	var orderResult OrderResult
@@ -230,6 +228,8 @@ func (c *CppCrawler) CreateOrder() {
 	c.OrderResult = orderResult
 	if orderResult.IsSuccess {
 		fmt.Println("抢到票了！")
+	} else {
+		fmt.Println(orderResult.Message)
 	}
 }
 
@@ -372,8 +372,14 @@ func (c *CppCrawler) CronTicket() {
 	scheduler := gocron.NewScheduler(time.Local)
 	scheduler.Every(1).Day().At(temp).Do(func() {
 		c.GrapTicket()
+		scheduler.Stop()
 	})
 
 	// 启动调度器（阻塞式运行）
 	scheduler.StartBlocking()
+}
+func (c *CppCrawler) SetVersion() {
+	fmt.Println("输入版本号:")
+	fmt.Scanln(&c.Version)
+	writeJson(*c)
 }

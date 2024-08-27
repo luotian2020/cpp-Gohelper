@@ -18,7 +18,8 @@ func main() {
 		fmt.Println("5.直接抢票")
 		fmt.Println("6.定时抢票")
 		fmt.Println("7.时间间隔设置")
-		fmt.Println("8.退出")
+		fmt.Println("8.版本重置")
+		fmt.Println("9.退出")
 		fmt.Println("-------------------------")
 		fmt.Println("请选择:")
 		fmt.Scanln(&a)
@@ -40,6 +41,8 @@ func main() {
 		case 7:
 			c.SetTimeSleep()
 		case 8:
+			c.SetVersion()
+		case 9:
 			goto breakFlag
 		default:
 			fmt.Println("输入非法！")
