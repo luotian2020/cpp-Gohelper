@@ -84,6 +84,10 @@ func (c *CppCrawler) Login() {
 * 获取票信息
  */
 func (c *CppCrawler) GetTicketInfo() {
+	if c.Token == "" {
+		fmt.Println("你还未登录！")
+		return
+	}
 	fmt.Println("请输入活动Id:")
 	fmt.Scanln(&c.EventMainId)
 	header := map[string]string{
@@ -144,6 +148,10 @@ func (c *CppCrawler) ChoseTicket() {
 * 获取购买人信息
  */
 func (c *CppCrawler) GetPersonInfo() {
+	if c.Token == "" {
+		fmt.Println("你还未登录！")
+		return
+	}
 	header := map[string]string{
 		"User-Agent":    "okhttp/3.14.7",
 		"Origin":        "https://cp.allcpp.cn",
@@ -357,6 +365,10 @@ func (c *CppCrawler) SetTimeSleep() {
 	writeJson(*c)
 }
 func (c *CppCrawler) GrapTicket() {
+	if c.Token == "" {
+		fmt.Println("你还未登录！")
+		return
+	}
 	for {
 		c.CreateOrder()
 		if c.OrderResult.IsSuccess {
@@ -366,6 +378,10 @@ func (c *CppCrawler) GrapTicket() {
 	}
 }
 func (c *CppCrawler) CronTicket() {
+	if c.Token == "" {
+		fmt.Println("你还未登录！")
+		return
+	}
 	var temp string
 	fmt.Println("请输入当天抢票时间:")
 	fmt.Scanln(&temp)

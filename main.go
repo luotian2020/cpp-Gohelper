@@ -8,6 +8,7 @@ import (
 func main() {
 	var a int
 	c := cpp.NewCppCrawler()
+	c.Login()
 	for {
 		fmt.Println("----------本项目仅供学习交流使用，禁止用于商业用途-----------------")
 		fmt.Println("-------CPP 抢票助手------")
