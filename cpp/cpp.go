@@ -32,7 +32,7 @@ func NewCppCrawler() *CppCrawler {
 		fmt.Scanln(&cppObj.Password)
 	}
 	if cppObj.Version == "" {
-		fmt.Println("请输入当前版本:")
+		fmt.Println("请输入当前版本(请填写 3.14.7):")
 		fmt.Scanln(&cppObj.Version)
 	}
 	cppObj.client = &http.Client{}
@@ -90,7 +90,7 @@ func (c *CppCrawler) GetTicketInfo() {
 		fmt.Println("你还未登录！")
 		return
 	}
-	fmt.Println("请输入活动Id:")
+	fmt.Println("请输入活动Id(CP30 ID为 1729):")
 	fmt.Scanln(&c.EventMainId)
 	header := map[string]string{
 		"User-Agent":    "okhttp/3.14.7",
@@ -384,9 +384,14 @@ func (c *CppCrawler) CronTicket() {
 		fmt.Println("你还未登录！")
 		return
 	}
+	if(c.BuyPerson.Realname==""){
+		fmt.Println("你还未选择购买人！")
+	}
+	c.PrintTicketInfo()
 	var temp string
-	fmt.Println("请输入当天抢票时间:")
+	fmt.Println("请输入当天抢票时间(比如 12:00):")
 	fmt.Scanln(&temp)
+	fmt.Printf("定时时间为:%v,准备抢票中----",temp)
 	scheduler := gocron.NewScheduler(time.Local)
 	scheduler.Every(1).Day().At(temp).Do(func() {
 		c.GrapTicket()
@@ -500,4 +505,11 @@ func (c *CppCrawler) SendMail(info string) {
 	}
 
 	fmt.Println("Email sent successfully!")
+}
+
+func (c *CppCrawler) PrintTicketInfo(){
+	fmt.Println("当前信息:")
+	fmt.Printf("当前购买票种：%v",c.BuyTicket.TicketName);
+	fmt.Println();
+	fmt.Printf("当前购买人：%v - %v \n",c.BuyPerson.Realname,string(c.BuyPerson.Idcard))
 }
