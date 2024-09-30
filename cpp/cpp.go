@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/smtp"
 	"net/url"
 	"os"
 	"strconv"
@@ -141,7 +142,7 @@ func (c *CppCrawler) ChoseTicket() {
 	fmt.Println("请输入序号:")
 	var a int
 	fmt.Scanln(&a)
-	c.BuyTicket = c.TicketList[0]
+	c.BuyTicket = c.TicketList[a]
 	writeJson(*c)
 }
 
@@ -232,7 +233,7 @@ func (c *CppCrawler) CreateOrder() {
 	err := json.Unmarshal(body, &orderResult)
 	if err != nil {
 		fmt.Println("error json:", err)
-		panic("订单解析错误！")
+		return 
 	}
 	c.OrderResult = orderResult
 	if orderResult.IsSuccess {
@@ -449,8 +450,9 @@ func (c *CppCrawler) NoticeTicketInfo(EventMainId int) {
 	c.TicketList = typeResponse.TicketTypeList
 	if len(c.TicketList) != 0 {
 		//向windows 发送信息
-		strvalue := fmt.Sprintf("%v", c.TicketList)
+		strvalue := string(body)
 		c.SendNotice("Cpp放票信息通知", "放票信息为"+strvalue)
+		c.SendMail(strvalue)
 	}
 }
 
@@ -468,4 +470,34 @@ func (c *CppCrawler) SendNotice(title string, info string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func (c *CppCrawler) SendMail(info string) {
+	// SMTP 服务器配置
+	smtpHost := "smtp.qq.com"             // SMTP 服务器地址
+	smtpPort := "587"                     // SMTP 端口
+	username := "galigali-luotian@qq.com" // SMTP 用户名
+	password := "nxixvplsxhowcfdf"        // SMTP 密码
+
+	// 收件人和发件人
+	from := "galigali-luotian@qq.com"
+	to := []string{"2731741733@qq.com"}
+
+	// 邮件内容
+	message := []byte("From: Give <" + from + ">\r\n" +
+		"To: " + to[0] + "\r\n" +
+		"Subject: CPP票种信息通知\r\n" +
+		"\r\n" + info)
+
+	// 连接到 SMTP 服务器
+	auth := smtp.PlainAuth("", username, password, smtpHost)
+
+	// 发送邮件
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Println("Email sent successfully!")
 }
