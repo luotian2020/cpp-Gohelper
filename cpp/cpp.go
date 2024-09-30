@@ -474,14 +474,14 @@ func (c *CppCrawler) SendNotice(title string, info string) {
 
 func (c *CppCrawler) SendMail(info string) {
 	// SMTP 服务器配置
-	smtpHost := "smtp.qq.com"             // SMTP 服务器地址
-	smtpPort := "587"                     // SMTP 端口
-	username := "galigali-luotian@qq.com" // SMTP 用户名
-	password := "nxixvplsxhowcfdf"        // SMTP 密码
+	smtpHost := ""             // SMTP 服务器地址
+	smtpPort := ""                     // SMTP 端口
+	username := "" // SMTP 用户名
+	password := ""        // SMTP 密码
 
 	// 收件人和发件人
 	from := "galigali-luotian@qq.com"
-	to := []string{"2731741733@qq.com"}
+	to := []string{"2"}
 
 	// 邮件内容
 	message := []byte("From: Give <" + from + ">\r\n" +
